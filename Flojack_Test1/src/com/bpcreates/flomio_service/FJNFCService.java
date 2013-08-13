@@ -64,7 +64,7 @@ public class FJNFCService extends IntentService {
     private Context context;
 
    
-    
+    short [] buffer;
     public FJNFCService() {
         super("FJNFC Service");
         L.d("FJNFC constructor called.");
@@ -123,8 +123,8 @@ public class FJNFCService extends IntentService {
             public void onPeriodicNotification(AudioRecord recorder) {
             	L.d("NOTIFIED");
             	
-                short[] buffer = new short[Const.SAMPLES];//buffers[++lastBuffer % buffers.length];
-                recorder.read(buffer, 0, Const.SAMPLES);
+                ///*short[]*/ buffer = new short[Const.SAMPLES];//buffers[++lastBuffer % buffers.length];
+                //recorder.read(buffer, 0, Const.SAMPLES);
                 
                 String strBuffer = "";
                 for(int i = 0; i< Const.SAMPLES; i++)
@@ -153,7 +153,7 @@ public class FJNFCService extends IntentService {
 
         remoteIOUnit.startRecording();
         
-        final short[] buffer = new short[Const.SAMPLES];
+        /*final short[] */buffer = new short[Const.SAMPLES];
         
         while (!Thread.interrupted()) {
         	String strBuffer = "";
