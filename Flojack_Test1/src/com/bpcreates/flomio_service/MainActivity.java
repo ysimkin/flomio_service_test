@@ -10,14 +10,10 @@ import android.os.Bundle;
 
 public class MainActivity extends Activity {
 
-    //public FJNFCService mFJNFCService;
-    //public UIListener mUIListener;
     
-    
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onResume() { 
+        super.onResume();
         L.d("calling service constructor");
         
         Intent i = new Intent(MainActivity.this, FJNFCService.class);
@@ -26,6 +22,6 @@ public class MainActivity extends Activity {
         }catch(Exception e){
         	L.e("fail " + e);
         }
-        finish();
+        //finish();
     }    
 }

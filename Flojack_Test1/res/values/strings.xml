@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">FloJackExample</string>
+    <string name="app_name">FloJack Monitor</string>
     <string name="ISO14443A_label">ISO14443A</string>
     <string name="ISO15693_label">ISO15693</string>
     <string name="Felica_label">Felica</string>
