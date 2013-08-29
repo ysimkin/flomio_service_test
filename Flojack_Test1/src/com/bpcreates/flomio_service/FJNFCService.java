@@ -452,13 +452,19 @@ public class FJNFCService extends IntentService {
 
     private void handleReceivedByte(byte myByte, boolean parityGood, long timestamp) {
         // Prepare the notification intent
+    	
+    	
+    	if(myByte == 0xFF){
+        	L.d("GOT 0xFF so not adding it to the MIX");
+        	return;
+        }else{
+        	L.d( String.format("THE SCAN CAME IN WAS NOT 0xFF, RATHER IT WAS 0x%x" , myByte));
+        }
+    	
         Intent i = new Intent();
         i.setAction("com.restock.serialmagic.gears.action.SCAN");
         
-        if(myByte == 0xFF){
-        	L.d("GOT 0xFF so not adding it to the MIX");
-        	return;
-        }
+        
 
         /*
          *  ERROR CHECKING
