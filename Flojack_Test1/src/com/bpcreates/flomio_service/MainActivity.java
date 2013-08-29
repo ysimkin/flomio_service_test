@@ -43,8 +43,16 @@ public class MainActivity extends Activity {
 			String s = intent.getAction();
 			if (s.equals(SM_BCAST_SCAN)) {
 				try{
-					String scan = intent.getStringExtra("scan");
-					Toast.makeText(MainActivity.this, "GOT SCAN " + scan, Toast.LENGTH_LONG).show();
+					if(intent.hasExtra("error")){
+						Toast.makeText(MainActivity.this, "Tag scan error, please try again", Toast.LENGTH_LONG).show();
+						L.d("GOT ERROR BROADCAST: " + intent.getStringExtra("error") );
+						return;
+					}
+					else if(intent.hasExtra("scan")){
+						String scan = intent.getStringExtra("scan");
+						Toast.makeText(MainActivity.this, "GOT SCAN " + scan, Toast.LENGTH_LONG).show();
+						L.d("BROADCAST RECEIVED SCAN VALUE OF " + scan);
+					}
 				}catch(Exception e){
 					Toast.makeText(MainActivity.this, "something went wrong: " + e, Toast.LENGTH_LONG).show();
 				}				

@@ -1,5 +1,9 @@
 package com.bpcreates.flomio_service;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
+
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -9,9 +13,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.FloatMath;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
+import android.widget.Toast;
 
 public class FJNFCService extends IntentService {
     // Basic Audio system constants
@@ -100,6 +102,7 @@ public class FJNFCService extends IntentService {
     private int lastPhase2 = 0;
     private int phase2 = 0;
     private byte sample = 0;
+    private Context context;
 
     // UART decoding
     private int bitNum = 0;
@@ -454,7 +457,7 @@ public class FJNFCService extends IntentService {
         // Prepare the notification intent
     	
     	L.d(String.format("myByte coming in as %x", myByte));
-    	if(myByte == 0xff){
+    	if(myByte == (byte)0xff){
         	L.d("GOT 0xFF so not adding it to the MIX");
         	return;
         }else{
@@ -487,8 +490,12 @@ public class FJNFCService extends IntentService {
             if (messageReceiveBuffer.position() > 0) {
                 Log.d(LOG_TAG,String.format("Timeout reached. Dumping previous buffer. \nmessageReceiveBuffer:%s \nmessageReceiveBuffer.length:%d", messageReceiveBuffer.toString(), messageReceiveBuffer.position()));
                 // Prepare Intent to broadcast
-                i.putExtra("scan",String.format("Error: message corrupt, timeout reached @ %d ms", (timestamp - lastByteReceivedAtTime)));
+                
+                //YS REMOVED THIS
+                i.putExtra("error",String.format("Error: message corrupt, timeout reached @ %d ms", (timestamp - lastByteReceivedAtTime)));
                 sendBroadcast(i);
+                
+                //Toast.makeText(getApplicationContext(), "Tag scan failed. Please try again", Toast.LENGTH_LONG).show();
             }
 
             Log.d(LOG_TAG,String.format(" ++ Message Valid: byte is part of a new message (timeout: %d)", (timestamp - lastByteReceivedAtTime)));
@@ -524,7 +531,7 @@ public class FJNFCService extends IntentService {
                 messageReceiveBuffer.position(3);
                 byte[] tmp = new byte[messageReceiveBuffer.limit()-4];
                 messageReceiveBuffer.get(tmp, 0, tmp.length);
-                i.putExtra("scan",String.format("UUID: 0x%s",bytesToHex(tmp)));
+                i.putExtra("scan",String.format("%s",bytesToHex(tmp)));
                 sendBroadcast(i);
 
                 markCurrentMessageValidAtTime(timestamp);
@@ -533,6 +540,9 @@ public class FJNFCService extends IntentService {
             else {
                 //TODO: plumb this through to delegate
                 Log.d(LOG_TAG,String.format("Bad CRC, ignoring current message."));
+                //Toast.makeText(getApplicationContext(),"Tag scanning error. Please try again",Toast.LENGTH_LONG).show();
+                i.putExtra("error","Tag scanning error. Please try again");
+                sendBroadcast(i);
                 markCurrentMessageCorruptAndClearBufferAtTime(timestamp);
             }
         }
