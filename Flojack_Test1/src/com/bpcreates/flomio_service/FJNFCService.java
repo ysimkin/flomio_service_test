@@ -613,7 +613,7 @@ public class FJNFCService extends IntentService {
         byte logicOneValue = 1;
 
         // Device exceptions
-        if (machineName.equalsIgnoreCase("SCH-I925") || Build.PRODUCT.equalsIgnoreCase("gd1ltevzw") || Build.PRODUCT.equalsIgnoreCase("espresso10vzw")) {
+        if (machineName.equalsIgnoreCase("SCH-I925") || Build.PRODUCT.equalsIgnoreCase("gd1ltevzw") ) {
             logicOneValue = 0;
         }
 
