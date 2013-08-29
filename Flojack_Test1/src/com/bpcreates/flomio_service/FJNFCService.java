@@ -454,6 +454,11 @@ public class FJNFCService extends IntentService {
         // Prepare the notification intent
         Intent i = new Intent();
         i.setAction("com.restock.serialmagic.gears.action.SCAN");
+        
+        if(myByte == 0xFF){
+        	L.d("GOT 0xFF so not adding it to the MIX");
+        	return;
+        }
 
         /*
          *  ERROR CHECKING
@@ -608,7 +613,7 @@ public class FJNFCService extends IntentService {
         byte logicOneValue = 1;
 
         // Device exceptions
-        if (machineName.equalsIgnoreCase("SCH-I925") || Build.PRODUCT.equalsIgnoreCase("gd1ltevzw")) {
+        if (machineName.equalsIgnoreCase("SCH-I925") || Build.PRODUCT.equalsIgnoreCase("gd1ltevzw") || Build.PRODUCT.equalsIgnoreCase("espresso10vzw")) {
             logicOneValue = 0;
         }
 
