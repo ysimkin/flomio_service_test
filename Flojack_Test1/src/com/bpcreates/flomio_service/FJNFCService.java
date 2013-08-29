@@ -453,8 +453,8 @@ public class FJNFCService extends IntentService {
     private void handleReceivedByte(byte myByte, boolean parityGood, long timestamp) {
         // Prepare the notification intent
     	
-    	
-    	if(myByte == 0xFF){
+    	L.d(String.format("myByte coming in as %x", myByte));
+    	if(myByte == 0xff){
         	L.d("GOT 0xFF so not adding it to the MIX");
         	return;
         }else{
