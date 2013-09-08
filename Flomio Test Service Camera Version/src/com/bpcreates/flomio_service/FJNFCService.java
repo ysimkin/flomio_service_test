@@ -28,8 +28,8 @@ public class FJNFCService extends IntentService {
     private final static float LOWFREQ = (HIGHFREQ / 2);
     private final static int NUMSTOPBITS = 20;                  // number of stop bits to send before sending next value.
     private final static int NUMSYNCBITS = 4;                   // number of ones to send before sending first value.
-    private final static int SAMPLE_NOISE_CEILING = 3000;       // keeping running average and filter out noisy values around 0
-    private final static int SAMPLE_NOISE_FLOOR = -3000;        // keeping running average and filter out noisy values around 0
+    private final static int SAMPLE_NOISE_CEILING = 5000;       // keeping running average and filter out noisy values around 0
+    private final static int SAMPLE_NOISE_FLOOR = -5000;        // keeping running average and filter out noisy values around 0
     private final static long MESSAGE_SYNC_TIMEOUT = 500;    // milliseconds
 
     // Message Length Boundaries
