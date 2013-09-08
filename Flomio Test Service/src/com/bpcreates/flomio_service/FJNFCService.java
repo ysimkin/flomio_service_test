@@ -11,9 +11,9 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
-import android.widget.Toast;
 
 public class FJNFCService extends IntentService {
     // Basic Audio system constants
@@ -138,12 +138,19 @@ public class FJNFCService extends IntentService {
         messageReceiveBuffer = ByteBuffer.allocate(MAX_MESSAGE_LENGTH);
         lastByteReceivedAtTime = (long) System.currentTimeMillis();
     }
+    
+    @Override 
+    public void onDestroy(){
+    	super.onDestroy();
+    	L.w("FLOMIO SERVICE HAS STOPPED");
+    	getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putBoolean(AM_ALIVE,false).commit();
+    }
 
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
-        Log.d(LOG_TAG, "onStart called");
-
+        Log.d(LOG_TAG, "FLOMIO SERVICE STARTING");
+        getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putBoolean(AM_ALIVE,true).commit();
         // a frame is composed of one audio sample. Stereo can have 2 channels
         int playBufferSize = AudioTrack.getMinBufferSize(RATE, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -180,7 +187,13 @@ public class FJNFCService extends IntentService {
         remoteInputUnit.startRecording();
         remoteOutputUnit.play();
         new FJNFCListener().start();
+        
+        
+        
     }
+    
+    
+    
 
     @Override
     public void onHandleIntent(Intent intent) {
@@ -224,12 +237,19 @@ public class FJNFCService extends IntentService {
 //                processingTime = (System.currentTimeMillis()-timeTracker);
 //                Log.d(LOG_TAG, String.format("processed samples in %dms", processingTime));
             }
+            
+            
+            L.w("FLOMIO AUDIO THREAD LOOP INTERRUPTED.");
             remoteOutputUnit.stop();     // stop playing date out
             remoteInputUnit.stop();      // stop sampling data in
             remoteOutputUnit.release();  // let go of playBuffer
             remoteInputUnit.release();   // let go of recBuffer
+            
+            
         }
     }
+    
+    
 
     private void flojackAUInputCallback(ShortBuffer inData) {
 
@@ -662,5 +682,10 @@ public class FJNFCService extends IntentService {
         }
         return new String(hexChars);
     }
+    
+	public static final String FLOMIO_PING = "com.bpcreates.FLOMIO_PING";
+	public static final String FLOMIO_PONG = "com.bpcreates.FLOMIO_PONG";
+	protected static final String AM_ALIVE = "am_alive";
+    
 }
 

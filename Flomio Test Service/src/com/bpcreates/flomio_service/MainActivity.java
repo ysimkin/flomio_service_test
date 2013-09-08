@@ -1,14 +1,13 @@
 package com.bpcreates.flomio_service;
 
 
-import java.util.Calendar;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.widget.Toast;
 
 
@@ -16,6 +15,19 @@ public class MainActivity extends Activity {
 
 	public static final String SM_BCAST_SCAN = "com.restock.serialmagic.gears.action.SCAN";
 	IntentFilter filter = new IntentFilter(SM_BCAST_SCAN);
+	
+	public static final String FLOMIO_PING = "com.bpcreates.FLOMIO_PING";
+	public static final String FLOMIO_PONG = "com.bpcreates.FLOMIO_PONG";
+	IntentFilter pingFilter = new IntentFilter(FLOMIO_PING);
+	
+	@Override 
+	public void onCreate(Bundle b){
+		super.onCreate(b);
+		registerReceiver(pingReceiver, pingFilter);
+		
+		
+	}
+	
     @Override
     protected void onResume() { 
         super.onResume();
@@ -27,6 +39,10 @@ public class MainActivity extends Activity {
         }catch(Exception e){
         	L.e("fail " + e);
         }
+        L.d("PONGING BACK");			
+		Intent pong = new Intent();
+		pong.setAction(FLOMIO_PONG);
+        sendBroadcast(pong);
         
         registerReceiver(scanReceiver, filter);        
     }  
@@ -34,6 +50,15 @@ public class MainActivity extends Activity {
     public void onPause(){
     	super.onPause();
     	unregisterReceiver(scanReceiver);
+    }
+    
+    public void onDestroy(){
+    	super.onDestroy();
+    	try{
+    		unregisterReceiver(pingReceiver);
+    	}catch(Exception e){
+    		
+    	}
     }
     
     
@@ -56,7 +81,28 @@ public class MainActivity extends Activity {
 				}catch(Exception e){
 					Toast.makeText(MainActivity.this, "something went wrong: " + e, Toast.LENGTH_LONG).show();
 				}				
-			}			
+			}
+		}
+	};
+	
+	BroadcastReceiver pingReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String s = intent.getAction();
+			if(s.equals(FLOMIO_PING)){				
+				if(getSharedPreferences(getPackageName(), MODE_PRIVATE).getBoolean(FJNFCService.AM_ALIVE, false) == false){
+					Intent serviceIntent = new Intent(MainActivity.this, FJNFCService.class);
+					try{
+						PendingIntent.getService(MainActivity.this, 0, serviceIntent, 0).send();
+					}catch(Exception e){
+						L.e("unable to start flomio service "+ e);
+					}
+				}
+				L.d("PONGING BACK FROM RECEIVER");			
+				Intent i = new Intent();
+		        i.setAction(FLOMIO_PONG);
+		        sendBroadcast(i);
+			}
 		}
 	};
 }
