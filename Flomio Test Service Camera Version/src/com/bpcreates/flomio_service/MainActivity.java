@@ -1,6 +1,7 @@
 package com.bpcreates.flomio_service;
 
 
+import versionchecker.VersionChecker;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Toast;
 
 
@@ -25,6 +27,13 @@ public class MainActivity extends Activity {
 		super.onCreate(b);
 		registerReceiver(pingReceiver, pingFilter);
 		
+		Constants.sendStationInfoToServer(MainActivity.this, null, new PostSCCallback(MainActivity.this){
+			@Override
+			public void run(){
+//				super.run();
+				new Handler().post(new VersionChecker(MainActivity.this, getResponseBodyJSON(), null));
+			}
+		});
 		
 	}
 	
